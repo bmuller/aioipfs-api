@@ -1,0 +1,8 @@
+*.pickle
+*.pid
+apidoc
+*.pyc
+build
+dist
+aioipfs_api.egg-info
+docs/_build
