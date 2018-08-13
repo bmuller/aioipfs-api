@@ -6,3 +6,5 @@ build
 dist
 aioipfs_api.egg-info
 docs/_build
+.coverage
+coverage.xml

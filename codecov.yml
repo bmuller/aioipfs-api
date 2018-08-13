@@ -1,0 +1,2 @@
+ignore:
+  - "test_linting.py"
