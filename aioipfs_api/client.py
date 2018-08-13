@@ -24,13 +24,25 @@ class HTTPClient:
     async def get(self, *parts, **kwargs):
         parts = "/".join(parts)
         url = self.url.join(URL(parts))
-        async with self.client.get(url) as resp:
-            if resp.content_type == 'text/plain':
-                return resp
-            return await resp.json()
+        async with self.client.get(url, params=kwargs) as resp:
+            return resp
+
+    async def get_parsed(self, *parts, **kwargs):
+        parts = "/".join(parts)
+        url = self.url.join(URL(parts))
+        async with self.client.get(url, params=kwargs) as resp:
+            if resp.content_type == 'application/json':
+                return await resp.json()
+            return await resp.text()        
 
     async def close(self):
         await self.client.close()
+
+
+def get_parsed_method(path):
+    async def method(obj, *args, **kwargs):
+        return await obj.client.get_parsed(path, *args, **kwargs)
+    return method
 
 
 class Client:
@@ -55,29 +67,31 @@ class Client:
     async def __aexit__(self, exc_type, exc, tb):
         await self.close()
 
-    async def version(self):
-        return await self.client.get('version')
-
-    async def id(self):
-        return await self.client.get('id')
+    version = get_parsed_method('version')
+    id = get_parsed_method('id')
+    ls = get_parsed_method('ls')
         
     async def cat(self, multihash):
         return await self.client.get('cat', multihash)
 
+    async def object_data(self, multihash):
+        data = await self.client.get('object', 'data', multihash)
+        return await data.read()
 
-log = logging.getLogger('client')
-log.setLevel(logging.DEBUG)
-log.addHandler(logging.StreamHandler())
 
-async def main():
-    async with Client() as c:
-        print(await c.version())
-        txt = await c.cat('QmZLRFWaz9Kypt2ACNMDzA5uzACDRiCqwdkNSP1UZsu56D')
-        print(await txt.content.read())
-        resp.close()
-        print(await c.id())        
-        img = await c.cat('QmcAoKXzmgkBcFQgTpWMny9dQXPjxtbwxNSR7D84g2xFHm')
-        print(await img.content.read())
-        
-loop = asyncio.get_event_loop()
-r = loop.run_until_complete(main())
+
+if __name__ == "__main__":
+    log = logging.getLogger('client')
+    log.setLevel(logging.DEBUG)
+    log.addHandler(logging.StreamHandler())
+
+    async def main():
+        async with Client() as c:
+            print(await c.version())
+            #print(await c.cat('QmZLRFWaz9Kypt2ACNMDzA5uzACDRiCqwdkNSP1UZsu56D'))
+            print(await c.id())        
+            print(await c.ls('QmQsvfkjXXFAR4buzGRiVRTSP7DDbkNPoBhG8xiin9dmKj'))
+            #print(await c.object_data('QmNW36HjE2cmJN8xCuJPggRsJrvMsH1Uxz2uHhn2CUSy2F'))
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
