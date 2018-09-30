@@ -8,3 +8,4 @@ aioipfs_api.egg-info
 docs/_build
 .coverage
 coverage.xml
+.pytest_cache

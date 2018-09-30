@@ -5,7 +5,7 @@ from distutils.version import LooseVersion
 import aiohttp
 from yarl import URL
 
-from exceptions import VersionMismatch
+from aioipfs_api.exceptions import VersionMismatch
 
 log = logging.getLogger(__name__)
 
@@ -72,26 +72,14 @@ class Client:
     ls = get_parsed_method('ls')
         
     async def cat(self, multihash):
+        """
+        Fetch IPFS object data.
+
+        :param multihash: The path to the IPFS object(s) to be outputted.
+        :returns: A coroutine which returns a file-like readable object
+        """
         return await self.client.get('cat', multihash)
 
     async def object_data(self, multihash):
         data = await self.client.get('object', 'data', multihash)
         return await data.read()
-
-
-
-if __name__ == "__main__":
-    log = logging.getLogger('client')
-    log.setLevel(logging.DEBUG)
-    log.addHandler(logging.StreamHandler())
-
-    async def main():
-        async with Client() as c:
-            print(await c.version())
-            #print(await c.cat('QmZLRFWaz9Kypt2ACNMDzA5uzACDRiCqwdkNSP1UZsu56D'))
-            print(await c.id())        
-            print(await c.ls('QmQsvfkjXXFAR4buzGRiVRTSP7DDbkNPoBhG8xiin9dmKj'))
-            #print(await c.object_data('QmNW36HjE2cmJN8xCuJPggRsJrvMsH1Uxz2uHhn2CUSy2F'))
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())

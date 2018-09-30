@@ -10,6 +10,15 @@ aioipfs-api
    :maxdepth: 2
    :caption: Contents:
 
+.. module:: aioipfs_api.client
+.. autoclass:: Client
+   :members:
+   :undoc-members:
+
+.. module:: aioipfs_api.autoapi      
+.. autoclass:: IPFSInterface
+   :members:
+   :undoc-members:
 
 
 Indices and tables
