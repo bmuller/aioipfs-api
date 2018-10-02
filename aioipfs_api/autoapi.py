@@ -12,8 +12,8 @@ class IPFSInterface:
         """
         Add a file or directory to ipfs.
 
-        :param path: The path to a file to be added to ipfs. (file)
-        :param recursive: Add directory paths recursively. (bool)  Default: True
+        :param path: The path to a file to be added to ipfs. (string)
+        :param recursive: Add directory paths recursively. (bool)  Default: False
         :param quiet: Write minimal output. (bool)  Default: False
         :param quieter: Write only final hash. (bool)  Default: False
         :param silent: Write no output. (bool)  Default: False
@@ -42,7 +42,7 @@ class IPFSInterface:
 
         """
         endpoint = 'add'
-        args = [path]
+        args = [(path, 'file')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -65,7 +65,7 @@ class IPFSInterface:
 
         """
         endpoint = 'bitswap/ledger'
-        args = [peer]
+        args = [(peer, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -73,7 +73,7 @@ class IPFSInterface:
         """
         Trigger reprovider.
 
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'bitswap/reprovide'
         args = []
@@ -115,10 +115,10 @@ class IPFSInterface:
         Remove a given block from your wantlist.
 
         :param key: Key(s) to remove from your wantlist. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'bitswap/unwant'
-        args = [key]
+        args = [(key, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -148,10 +148,10 @@ class IPFSInterface:
         Get a raw IPFS block.
 
         :param key: The base58 multihash of an existing block to get. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'block/get'
-        args = [key]
+        args = [(key, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -159,7 +159,7 @@ class IPFSInterface:
         """
         Store input as an IPFS block.
 
-        :param data: The data to be stored as an IPFS block. (file)
+        :param data: The data to be stored as an IPFS block. (string)
         :param format: cid format for blocks to be created with. (string)  Default: ""
         :param mhtype: multihash hash function. (string)  Default: sha2-256
         :param mhlen: multihash hash length. (int)  Default: -1
@@ -174,7 +174,7 @@ class IPFSInterface:
 
         """
         endpoint = 'block/put'
-        args = [data]
+        args = [(data, 'file')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -196,7 +196,7 @@ class IPFSInterface:
 
         """
         endpoint = 'block/rm'
-        args = [hash]
+        args = [(hash, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -216,7 +216,7 @@ class IPFSInterface:
 
         """
         endpoint = 'block/stat'
-        args = [key]
+        args = [(key, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -287,10 +287,10 @@ class IPFSInterface:
         :param ipfs_path: The path to the IPFS object(s) to be outputted. (string)
         :param offset: Byte offset to begin reading from. (int)  Default: 0
         :param length: Maximum number of bytes to read. (int)  Default: 0
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'cat'
-        args = [ipfs_path]
+        args = [(ipfs_path, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -350,7 +350,7 @@ class IPFSInterface:
         """
         Open the config file for editing in $EDITOR.
 
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'config/edit'
         args = []
@@ -362,10 +362,10 @@ class IPFSInterface:
         Apply profile to config.
 
         :param profile: The profile to apply to the config. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'config/profile/apply'
-        args = [profile]
+        args = [(profile, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -373,11 +373,11 @@ class IPFSInterface:
         """
         Replace the config with <file>.
 
-        :param file: The file to use as the new config. (file)
-        :returns: A readable file like object
+        :param file: The file to use as the new config. (string)
+        :returns: A file like object that can be read.
         """
         endpoint = 'config/replace'
-        args = [file]
+        args = [(file, 'file')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -385,7 +385,7 @@ class IPFSInterface:
         """
         Output config file contents.
 
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'config/show'
         args = []
@@ -397,10 +397,10 @@ class IPFSInterface:
         Get a dag node from ipfs.
 
         :param ref: The object to get (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'dag/get'
-        args = [ref]
+        args = [(ref, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -408,7 +408,7 @@ class IPFSInterface:
         """
         Add a dag node to ipfs.
 
-        :param object_data: The object to put (file)
+        :param object_data: The object to put (string)
         :param format: Format that the object will be added as. (string)  Default: cbor
         :param input_enc: Format that the input object will be. (string)  Default: json
         :param pin: Pin this object when adding. (bool)  Default: False
@@ -423,7 +423,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dag/put'
-        args = [object_data]
+        args = [(object_data, 'file')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -443,7 +443,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dag/resolve'
-        args = [ref]
+        args = [(ref, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -473,7 +473,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dht/findpeer'
-        args = [peerID]
+        args = [(peerID, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -504,7 +504,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dht/findprovs'
-        args = [key]
+        args = [(key, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -534,7 +534,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dht/get'
-        args = [key]
+        args = [(key, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -565,7 +565,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dht/provide'
-        args = [key]
+        args = [(key, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -596,7 +596,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dht/put'
-        args = [key, value]
+        args = [(key, 'string'), (value, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -626,7 +626,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dht/query'
-        args = [peerID]
+        args = [(peerID, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -634,7 +634,7 @@ class IPFSInterface:
         """
         Clear inactive requests from the log.
 
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'diag/cmds/clear'
         args = []
@@ -646,10 +646,10 @@ class IPFSInterface:
         Set how long to keep inactive requests in the log.
 
         :param time: Time to keep inactive requests in log. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'diag/cmds/set-time'
-        args = [time]
+        args = [(time, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -657,7 +657,7 @@ class IPFSInterface:
         """
         Print system diagnostic information.
 
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'diag/sys'
         args = []
@@ -680,7 +680,7 @@ class IPFSInterface:
 
         """
         endpoint = 'dns'
-        args = [domain_name]
+        args = [(domain_name, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -716,7 +716,7 @@ class IPFSInterface:
 
         """
         endpoint = 'file/ls'
-        args = [ipfs_path]
+        args = [(ipfs_path, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -727,7 +727,7 @@ class IPFSInterface:
         :param path: Path to change. Default: '/'. (string)  Default: ""
         :param cid_version: Cid version to use. (experimental). (int)  Default: 0
         :param hash: Hash function to use. Will set Cid version to 1 if used. (experimental). (string)  Default: ""
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/chcid'
         args = []
@@ -740,10 +740,10 @@ class IPFSInterface:
 
         :param source: Source object to copy. (string)
         :param dest: Destination to copy object to. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/cp'
-        args = [source, dest]
+        args = [(source, 'string'), (dest, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -752,7 +752,7 @@ class IPFSInterface:
         Flush a given path's data to disk.
 
         :param path: Path to flush. Default: '/'. (string)  Default: ""
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/flush'
         args = []
@@ -794,10 +794,10 @@ class IPFSInterface:
         :param parents: No error if existing, make parent directories as needed. (bool)  Default: False
         :param cid_version: Cid version to use. (experimental). (int)  Default: 0
         :param hash: Hash function to use. Will set Cid version to 1 if used. (experimental). (string)  Default: ""
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/mkdir'
-        args = [path]
+        args = [(path, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -807,10 +807,10 @@ class IPFSInterface:
 
         :param source: Source file to move. (string)
         :param dest: Destination path for file to be moved to. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/mv'
-        args = [source, dest]
+        args = [(source, 'string'), (dest, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -821,10 +821,10 @@ class IPFSInterface:
         :param path: Path to file to be read. (string)
         :param offset: Byte offset to begin reading from. (int)  Default: 0
         :param count: Maximum number of bytes to read. (int)  Default: 0
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/read'
-        args = [path]
+        args = [(path, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -834,10 +834,10 @@ class IPFSInterface:
 
         :param path: File to remove. (string)
         :param recursive: Recursively remove directories. (bool)  Default: False
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/rm'
-        args = [path]
+        args = [(path, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -875,7 +875,7 @@ class IPFSInterface:
 
         """
         endpoint = 'files/stat'
-        args = [path]
+        args = [(path, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -884,7 +884,7 @@ class IPFSInterface:
         Write to a mutable file in a given filesystem.
 
         :param path: Path to write to. (string)
-        :param data: Data to write. (file)
+        :param data: Data to write. (string)
         :param offset: Byte offset to begin writing at. (int)  Default: 0
         :param create: Create the file if it does not exist. (bool)  Default: False
         :param truncate: Truncate the file to size zero before writing. (bool)  Default: False
@@ -892,10 +892,10 @@ class IPFSInterface:
         :param raw_leaves: Use raw blocks for newly created leaf nodes. (experimental). (bool)  Default: False
         :param cid_version: Cid version to use. (experimental). (int)  Default: 0
         :param hash: Hash function to use. Will set Cid version to 1 if used. (experimental). (string)  Default: ""
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'files/write'
-        args = [path, data]
+        args = [(path, 'string'), (data, 'file')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -977,10 +977,10 @@ class IPFSInterface:
         :param archive: Output a TAR archive. (bool)  Default: False
         :param compress: Compress the output with GZIP compression. (bool)  Default: False
         :param compression_level: The level of compression (1-9). (int)  Default: 0
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'get'
-        args = [ipfs_path]
+        args = [(ipfs_path, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -1028,7 +1028,7 @@ class IPFSInterface:
 
         """
         endpoint = 'key/gen'
-        args = [name]
+        args = [(name, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1076,7 +1076,7 @@ class IPFSInterface:
 
         """
         endpoint = 'key/rename'
-        args = [name, newName]
+        args = [(name, 'string'), (newName, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1101,7 +1101,7 @@ class IPFSInterface:
 
         """
         endpoint = 'key/rm'
-        args = [name]
+        args = [(name, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1123,7 +1123,7 @@ class IPFSInterface:
 
         """
         endpoint = 'log/level'
-        args = [subsystem, level]
+        args = [(subsystem, 'string'), (level, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1151,7 +1151,7 @@ class IPFSInterface:
         """
         Read the event log.
 
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'log/tail'
         args = []
@@ -1187,7 +1187,7 @@ class IPFSInterface:
 
         """
         endpoint = 'ls'
-        args = [ipfs_path]
+        args = [(ipfs_path, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1235,7 +1235,7 @@ class IPFSInterface:
 
         """
         endpoint = 'name/publish'
-        args = [ipfs_path]
+        args = [(ipfs_path, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1254,7 +1254,7 @@ class IPFSInterface:
 
         """
         endpoint = 'name/pubsub/cancel'
-        args = [name]
+        args = [(name, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1324,10 +1324,10 @@ class IPFSInterface:
         Output the raw bytes of an IPFS object.
 
         :param key: Key of the object to retrieve, in base58-encoded multihash format. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'object/data'
-        args = [key]
+        args = [(key, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -1355,7 +1355,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/diff'
-        args = [obj_a, obj_b]
+        args = [(obj_a, 'string'), (obj_b, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1381,7 +1381,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/get'
-        args = [key]
+        args = [(key, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1408,7 +1408,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/links'
-        args = [key]
+        args = [(key, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1463,7 +1463,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/patch/add-link'
-        args = [root, name, ref]
+        args = [(root, 'string'), (name, 'string'), (ref, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1472,7 +1472,7 @@ class IPFSInterface:
         Append data to the data segment of a dag node.
 
         :param root: The hash of the node to modify. (string)
-        :param data: Data to append. (file)
+        :param data: Data to append. (string)
         :returns: A parsed dict result of:
 
             .. code-block:: python
@@ -1490,7 +1490,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/patch/append-data'
-        args = [root, data]
+        args = [(root, 'string'), (data, 'file')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1517,7 +1517,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/patch/rm-link'
-        args = [root, link]
+        args = [(root, 'string'), (link, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1526,7 +1526,7 @@ class IPFSInterface:
         Set the data field of an IPFS object.
 
         :param root: The hash of the node to modify. (string)
-        :param data: The data to set the object to. (file)
+        :param data: The data to set the object to. (string)
         :returns: A parsed dict result of:
 
             .. code-block:: python
@@ -1544,7 +1544,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/patch/set-data'
-        args = [root, data]
+        args = [(root, 'string'), (data, 'file')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1552,7 +1552,7 @@ class IPFSInterface:
         """
         Store input as a DAG object, print its key.
 
-        :param data: Data to be stored as a DAG object. (file)
+        :param data: Data to be stored as a DAG object. (string)
         :param inputenc: Encoding type of input data. One of: {"protobuf", "json"}. (string)  Default: json
         :param datafieldenc: Encoding type of the data field, either "text" or "base64". (string)  Default: text
         :param pin: Pin this object when adding. (bool)  Default: False
@@ -1574,7 +1574,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/put'
-        args = [data]
+        args = [(data, 'file')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1598,7 +1598,7 @@ class IPFSInterface:
 
         """
         endpoint = 'object/stat'
-        args = [key]
+        args = [(key, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1608,7 +1608,7 @@ class IPFSInterface:
 
         :param Protocol: P2P listener protocol (string)  Default: ""
         :param all: Close all listeners. (bool)  Default: False
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'p2p/listener/close'
         args = []
@@ -1645,10 +1645,10 @@ class IPFSInterface:
 
         :param Protocol: Protocol identifier. (string)
         :param Address: Request handling application address. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'p2p/listener/open'
-        args = [Protocol, Address]
+        args = [(Protocol, 'string'), (Address, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -1658,7 +1658,7 @@ class IPFSInterface:
 
         :param HandlerID: Stream HandlerID (string)  Default: ""
         :param all: Close all streams. (bool)  Default: False
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'p2p/stream/close'
         args = []
@@ -1672,10 +1672,10 @@ class IPFSInterface:
         :param Peer: Remote peer to connect to (string)
         :param Protocol: Protocol identifier. (string)
         :param BindAddress: Address to listen for connection/s (default: /ip4/127.0.0.1/tcp/0). (string)  Default: ""
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'p2p/stream/dial'
-        args = [Peer, Protocol]
+        args = [(Peer, 'string'), (Protocol, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -1727,7 +1727,7 @@ class IPFSInterface:
 
         """
         endpoint = 'pin/add'
-        args = [ipfs_path]
+        args = [(ipfs_path, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1774,7 +1774,7 @@ class IPFSInterface:
 
         """
         endpoint = 'pin/rm'
-        args = [ipfs_path]
+        args = [(ipfs_path, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1797,7 +1797,7 @@ class IPFSInterface:
 
         """
         endpoint = 'pin/update'
-        args = [from_path, to_path]
+        args = [(from_path, 'string'), (to_path, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1848,7 +1848,7 @@ class IPFSInterface:
 
         """
         endpoint = 'ping'
-        args = [peer_ID]
+        args = [(peer_ID, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -1899,10 +1899,10 @@ class IPFSInterface:
 
         :param topic: Topic to publish to. (string)
         :param data: Payload of message to publish. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'pubsub/pub'
-        args = [topic, data]
+        args = [(topic, 'string'), (data, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -1938,7 +1938,7 @@ class IPFSInterface:
 
         """
         endpoint = 'pubsub/sub'
-        args = [topic]
+        args = [(topic, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -2079,7 +2079,7 @@ class IPFSInterface:
 
         """
         endpoint = 'resolve'
-        args = [name]
+        args = [(name, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -2087,7 +2087,7 @@ class IPFSInterface:
         """
         Shut down the ipfs daemon
 
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'shutdown'
         args = []
@@ -2233,7 +2233,7 @@ class IPFSInterface:
 
         """
         endpoint = 'swarm/connect'
-        args = [address]
+        args = [(address, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -2254,7 +2254,7 @@ class IPFSInterface:
 
         """
         endpoint = 'swarm/disconnect'
-        args = [address]
+        args = [(address, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -2275,7 +2275,7 @@ class IPFSInterface:
 
         """
         endpoint = 'swarm/filters/add'
-        args = [address]
+        args = [(address, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -2296,7 +2296,7 @@ class IPFSInterface:
 
         """
         endpoint = 'swarm/filters/rm'
-        args = [address]
+        args = [(address, 'string')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -2337,7 +2337,7 @@ class IPFSInterface:
         """
         Import a tar file into ipfs.
 
-        :param file: Tar file to add. (file)
+        :param file: Tar file to add. (string)
         :returns: A parsed dict result of:
 
             .. code-block:: python
@@ -2351,7 +2351,7 @@ class IPFSInterface:
 
         """
         endpoint = 'tar/add'
-        args = [file]
+        args = [(file, 'file')]
         return await self.client.get_parsed(endpoint, args, kwargs)
 
 
@@ -2360,10 +2360,10 @@ class IPFSInterface:
         Export a tar file from IPFS.
 
         :param path: ipfs path of archive to export. (string)
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'tar/cat'
-        args = [path]
+        args = [(path, 'string')]
         return self.client.get(endpoint, args, kwargs)
 
 
@@ -2372,7 +2372,7 @@ class IPFSInterface:
         
 
         :param args: Arguments for subcommand. (string)  Default: ""
-        :returns: A readable file like object
+        :returns: A file like object that can be read.
         """
         endpoint = 'update'
         args = []

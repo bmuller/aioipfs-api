@@ -21,7 +21,7 @@ func NewCodeBuilder() CodeBuilder {
 func (cb CodeBuilder) AddLine(tabs int, s string, args ...interface{}) {
 	lines := fmt.Sprintf(s, args...)
 	for _, line := range strings.Split(lines, "\n") {
-		fmt.Fprintf(cb.buf, strings.Repeat(Tab, tabs) + line + "\n")
+		fmt.Fprintf(cb.buf, strings.Repeat(Tab, tabs)+line+"\n")
 	}
 }
 
@@ -51,7 +51,7 @@ func hasJSONResponse(endp *docs.Endpoint) bool {
 
 func argDefault(arg *docs.Argument) string {
 	if arg.Type == "bool" {
-		if arg.Default == "" {
+		if arg.Default == "" || arg.Default == "false" {
 			return "False"
 		}
 		return "True"
@@ -70,9 +70,12 @@ func argDescription(arg *docs.Argument) string {
 	// have consistency in how it's displayed
 	fixDesc, _ := regexp.Compile(" Default: [a-zA-z0-9-_]+ ?\\.")
 	desc := fixDesc.ReplaceAll([]byte(arg.Description), []byte(""))
-
+	argtype := arg.Type
+	if arg.Type == "file" && arg.Default == "" {
+		argtype = "string"
+	}
 	if arg.Required {
-		return fmt.Sprintf("%s (%s)", desc, arg.Type)
+		return fmt.Sprintf("%s (%s)", desc, argtype)
 	}
 	return fmt.Sprintf("%s (%s)  Default: %s", desc, arg.Type, argDefault(arg))
 }
@@ -116,7 +119,7 @@ func (md *PythonFormatter) GenerateEndpointBlock(endp *docs.Endpoint) string {
 	args = append(args, "**kwargs")
 	//args[len(endp.Arguments)] = "**kwargs"
 	sargs := strings.Join(args, ", ")
-	if hasJSONResponse(endp) { 
+	if hasJSONResponse(endp) {
 		cb.AddLine(1, "async def %s(self, %s):", name, sargs)
 	} else {
 		cb.AddLine(1, "def %s(self, %s):", name, sargs)
@@ -127,7 +130,7 @@ func (md *PythonFormatter) GenerateEndpointBlock(endp *docs.Endpoint) string {
 func (md *PythonFormatter) GenerateArgumentsBlock(args []*docs.Argument, opts []*docs.Argument) string {
 	cb := NewCodeBuilder()
 	cb.AddLine(2, "\"\"\"")
-	cb.AddLine(2, md.endpoint.Description)	
+	cb.AddLine(2, md.endpoint.Description)
 	cb.AddBlankLines(1)
 	for _, arg := range args {
 		cb.AddLine(2, ":param %s: %s", cleanName(arg.Name), argDescription(arg))
@@ -143,9 +146,9 @@ func (md *PythonFormatter) GenerateArgumentsBlock(args []*docs.Argument, opts []
 		cb.AddLine(4, strings.Trim(md.endpoint.Response, "\n"))
 		cb.AddBlankLines(1)
 	} else {
-		cb.AddLine(2, ":returns: A readable file like object")
+		cb.AddLine(2, ":returns: A file like object that can be read.")
 	}
-	cb.AddLine(2, "\"\"\"")	
+	cb.AddLine(2, "\"\"\"")
 	return cb.String()
 
 	// buf := new(bytes.Buffer)
@@ -194,7 +197,8 @@ func (md *PythonFormatter) GenerateBodyBlock(args []*docs.Argument) string {
 	//sargs := make([]string, len(args)+1)
 	for _, arg := range args {
 		if arg.Required {
-			sargs = append(sargs, cleanName(arg.Name))
+			nametype := fmt.Sprintf("(%s, '%s')", cleanName(arg.Name), arg.Type)
+			sargs = append(sargs, nametype)
 		}
 	}
 	cb.AddLine(2, "args = [%s]", strings.Join(sargs, ", "))
@@ -209,7 +213,6 @@ func (md *PythonFormatter) GenerateBodyBlock(args []*docs.Argument) string {
 	cb.AddBlankLines(2)
 	return cb.String()
 
-	
 	var bodyArg *docs.Argument
 	for _, arg := range args {
 		if arg.Type == "file" {
