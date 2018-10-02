@@ -6,6 +6,7 @@ import aiohttp
 from yarl import URL
 
 from aioipfs_api.exceptions import VersionMismatch
+from aioipfs_api.autoapi import IPFSInterface
 
 log = logging.getLogger(__name__)
 
@@ -21,16 +22,17 @@ class HTTPClient:
     async def connect(self):
         self.client = aiohttp.ClientSession(raise_for_status=True)
 
-    async def get(self, *parts, **kwargs):
-        parts = "/".join(parts)
-        url = self.url.join(URL(parts))
-        async with self.client.get(url, params=kwargs) as resp:
-            return resp
+    def get(self, path, args, kwargs):
+        url = self.url.join(URL(path))
+        params = [('arg', v) for v in args]
+        params += [(k, v) for k, v in kwargs.items()]        
+        return self.client.get(url, params=params)
 
-    async def get_parsed(self, *parts, **kwargs):
-        parts = "/".join(parts)
-        url = self.url.join(URL(parts))
-        async with self.client.get(url, params=kwargs) as resp:
+    async def get_parsed(self, path, args, kwargs):
+        url = self.url.join(URL(path))
+        params = [('arg', v) for v in args]
+        params += [(k, v) for k, v in kwargs.items()]
+        async with self.client.get(url, params=params) as resp:
             if resp.content_type == 'application/json':
                 return await resp.json()
             return await resp.text()        
@@ -39,13 +41,7 @@ class HTTPClient:
         await self.client.close()
 
 
-def get_parsed_method(path):
-    async def method(obj, *args, **kwargs):
-        return await obj.client.get_parsed(path, *args, **kwargs)
-    return method
-
-
-class Client:
+class Client(IPFSInterface):
     def __init__(self, host='localhost', port=5001, version='v0'):
         self.client = HTTPClient(host, port, version)
 
@@ -67,19 +63,19 @@ class Client:
     async def __aexit__(self, exc_type, exc, tb):
         await self.close()
 
-    version = get_parsed_method('version')
-    id = get_parsed_method('id')
-    ls = get_parsed_method('ls')
+    # version = get_parsed_method('version')
+    # id = get_parsed_method('id')
+    # ls = get_parsed_method('ls')
         
-    async def cat(self, multihash):
-        """
-        Fetch IPFS object data.
+    # async def cat(self, multihash):
+    #     """
+    #     Fetch IPFS object data.
 
-        :param multihash: The path to the IPFS object(s) to be outputted.
-        :returns: A coroutine which returns a file-like readable object
-        """
-        return await self.client.get('cat', multihash)
+    #     :param multihash: The path to the IPFS object(s) to be outputted.
+    #     :returns: A coroutine which returns a file-like readable object
+    #     """
+    #     return await self.client.get('cat', multihash)
 
-    async def object_data(self, multihash):
-        data = await self.client.get('object', 'data', multihash)
-        return await data.read()
+    # async def object_data(self, multihash):
+    #     data = await self.client.get('object', 'data', multihash)
+    #     return await data.read()

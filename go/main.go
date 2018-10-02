@@ -19,7 +19,10 @@ func NewCodeBuilder() CodeBuilder {
 }
 
 func (cb CodeBuilder) AddLine(tabs int, s string, args ...interface{}) {
-	fmt.Fprintf(cb.buf, strings.Repeat(Tab, tabs)+s+"\n", args...)
+	lines := fmt.Sprintf(s, args...)
+	for _, line := range strings.Split(lines, "\n") {
+		fmt.Fprintf(cb.buf, strings.Repeat(Tab, tabs) + line + "\n")
+	}
 }
 
 func (cb CodeBuilder) AddBlankLines(count int) {
@@ -36,6 +39,16 @@ func cleanArgName(name string) string {
 	return name
 }
 
+func trimEndpointPath(endp *docs.Endpoint) string {
+	version := strings.Split(docs.IPFSVersion(), ".")[0]
+	return strings.TrimPrefix(endp.Name, "/api/v"+version+"/")
+}
+
+func hasJSONResponse(endp *docs.Endpoint) bool {
+	trimmed := strings.Trim(endp.Response, " \t\n")
+	return strings.HasPrefix(trimmed, "{") && strings.HasSuffix(trimmed, "}")
+}
+
 type PythonFormatter struct {
 	endpoint *docs.Endpoint
 }
@@ -49,19 +62,26 @@ func (md *PythonFormatter) GenerateIndex(endps []*docs.Endpoint) string {
 }
 
 func (md *PythonFormatter) GenerateEndpointBlock(endp *docs.Endpoint) string {
-	md.current_endpoint = endp
-	version := strings.Split(docs.IPFSVersion(), ".")[0]
-	name := strings.TrimPrefix(endp.Name, "/api/v"+version+"/")
+	md.endpoint = endp
+	name := trimEndpointPath(endp)
 	name = strings.Replace(name, "/", "_", -1)
 
 	cb := NewCodeBuilder()
-	args := make([]string, len(endp.Arguments)+1)
-	for index, arg := range endp.Arguments {
-		args[index] = cleanArgName(arg.Name)
+	var args []string
+	//args := make([]string, len(endp.Arguments)+1)
+	for _, arg := range endp.Arguments {
+		if arg.Required {
+			args = append(args, cleanArgName(arg.Name))
+		}
 	}
-	args[len(endp.Arguments)] = "**kwargs"
+	args = append(args, "**kwargs")
+	//args[len(endp.Arguments)] = "**kwargs"
 	sargs := strings.Join(args, ", ")
-	cb.AddLine(1, "def %s(%s):", cleanArgName(name), sargs)
+	if hasJSONResponse(endp) { 
+		cb.AddLine(1, "async def %s(self, %s):", cleanArgName(name), sargs)
+	} else {
+		cb.AddLine(1, "def %s(self, %s):", cleanArgName(name), sargs)
+	}
 	return cb.String()
 }
 
@@ -71,14 +91,21 @@ func (md *PythonFormatter) GenerateArgumentsBlock(args []*docs.Argument, opts []
 	cb.AddLine(2, md.endpoint.Description)	
 	cb.AddBlankLines(1)
 	for _, arg := range args {
-		cb.AddLine(2, ":param %s: %s (%s)", cleanArgName(arg.Name), arg.Description, arg.Type)
+		if arg.Required {
+			cb.AddLine(2, ":param %s: %s (%s).", cleanArgName(arg.Name), arg.Description, arg.Type)
+		} else {
+			cb.AddLine(2, ":param %s: %s (%s).  Default: %s", cleanArgName(arg.Name), arg.Description, arg.Type, arg.Default)
+		}
 	}
 	for _, arg := range opts {
-		cb.AddLine(2, ":param %s: %s (%s)", cleanArgName(arg.Name), arg.Description, arg.Type)
+		cb.AddLine(2, ":param %s: %s (%s).  Default: %s", cleanArgName(arg.Name), arg.Description, arg.Type, arg.Default)
 	}
-	cb.AddLine(2, "\"\"\"")
-	cb.AddBlankLines(2)
-	cb.AddLine(2, "%s", md.current_endpoint.Name)
+	if hasJSONResponse(md.endpoint) {
+		cb.AddLine(2, ":returns: A parsed result of %s", strings.Trim(md.endpoint.Response, "\n"))
+	} else {
+		cb.AddLine(2, ":returns: A readable file like object")
+	}
+	cb.AddLine(2, "\"\"\"")	
 	return cb.String()
 
 	// buf := new(bytes.Buffer)
@@ -120,7 +147,29 @@ func genArgument(arg *docs.Argument, aliasToArg bool) string {
 }
 
 func (md *PythonFormatter) GenerateBodyBlock(args []*docs.Argument) string {
-	return ""
+	cb := NewCodeBuilder()
+	cb.AddLine(2, "endpoint = '%s'", trimEndpointPath(md.endpoint))
+
+	var sargs []string
+	//sargs := make([]string, len(args)+1)
+	for _, arg := range args {
+		if arg.Required {
+			sargs = append(sargs, cleanArgName(arg.Name))
+		}
+	}
+	cb.AddLine(2, "args = [%s]", strings.Join(sargs, ", "))
+	//sargs[len(args)] = "**kwargs"
+	//sargs = append(sargs, "**kwargs")
+	//alist := strings.Join(sargs, ", ")
+	if hasJSONResponse(md.endpoint) {
+		cb.AddLine(2, "return await self.client.get_parsed(endpoint, args, kwargs)")
+	} else {
+		cb.AddLine(2, "return self.client.get(endpoint, args, kwargs)")
+	}
+	cb.AddBlankLines(2)
+	return cb.String()
+
+	
 	var bodyArg *docs.Argument
 	for _, arg := range args {
 		if arg.Type == "file" {
