@@ -49,9 +49,10 @@ class Client(IPFSInterface):
         await self.client.connect()
         fversion = await self.version()
         version = LooseVersion(fversion['Version'])
-        log.debug("Checking version %s for compatability" % version)
-        if version < MIN_VERSION or version > MAX_VERSION:
+        if version < MIN_VERSION or version >= MAX_VERSION:
             raise VersionMismatch(version, MIN_VERSION, MAX_VERSION)
+        msg = "Library compiled for version %s, interacting with version %s"
+        log.debug(msg, IPFSInterface.VERSION, version)
 
     async def close(self):
         await self.client.close()
