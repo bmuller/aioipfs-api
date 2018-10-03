@@ -110,14 +110,12 @@ func (md *PythonFormatter) GenerateEndpointBlock(endp *docs.Endpoint) string {
 
 	cb := NewCodeBuilder()
 	var args []string
-	//args := make([]string, len(endp.Arguments)+1)
 	for _, arg := range endp.Arguments {
 		if arg.Required {
 			args = append(args, cleanName(arg.Name))
 		}
 	}
 	args = append(args, "**kwargs")
-	//args[len(endp.Arguments)] = "**kwargs"
 	sargs := strings.Join(args, ", ")
 	if hasJSONResponse(endp) {
 		cb.AddLine(1, "async def %s(self, %s):", name, sargs)
@@ -150,43 +148,6 @@ func (md *PythonFormatter) GenerateArgumentsBlock(args []*docs.Argument, opts []
 	}
 	cb.AddLine(2, "\"\"\"")
 	return cb.String()
-
-	// buf := new(bytes.Buffer)
-	// fmt.Fprintf(buf, "#### Arguments\n\n")
-
-	// if len(args)+len(opts) == 0 {
-	// 	fmt.Fprintf(buf, "This endpoint takes no arguments.\n")
-	// }
-
-	// for _, arg := range args {
-	// 	fmt.Fprintf(buf, genArgument(arg, true))
-	// }
-	// for _, opt := range opts {
-	// 	fmt.Fprintf(buf, genArgument(opt, false))
-	// }
-
-	// fmt.Fprintf(buf, "\n")
-	// return buf.String()
-}
-
-func genArgument(arg *docs.Argument, aliasToArg bool) string {
-	buf := new(bytes.Buffer)
-	alias := arg.Name
-	//if aliasToArg {
-	//alias = "arg"
-	//}
-	fixDesc, _ := regexp.Compile(" Default: [a-zA-z0-9-_]+ ?\\.")
-	fmt.Fprintf(buf, "  - `%s` [%s]: %s", alias, arg.Type, fixDesc.ReplaceAll([]byte(arg.Description), []byte("")))
-	if len(arg.Default) > 0 {
-		fmt.Fprintf(buf, ` Default: "%s".`, arg.Default)
-	}
-	if arg.Required {
-		fmt.Fprintf(buf, ` Required: **yes**.`)
-	} else {
-		fmt.Fprintf(buf, ` Required: no.`)
-	}
-	fmt.Fprintln(buf)
-	return buf.String()
 }
 
 func (md *PythonFormatter) GenerateBodyBlock(args []*docs.Argument) string {
@@ -194,7 +155,6 @@ func (md *PythonFormatter) GenerateBodyBlock(args []*docs.Argument) string {
 	cb.AddLine(2, "endpoint = '%s'", trimEndpointPath(md.endpoint))
 
 	var sargs []string
-	//sargs := make([]string, len(args)+1)
 	for _, arg := range args {
 		if arg.Required {
 			nametype := fmt.Sprintf("(%s, '%s')", cleanName(arg.Name), arg.Type)
@@ -202,9 +162,6 @@ func (md *PythonFormatter) GenerateBodyBlock(args []*docs.Argument) string {
 		}
 	}
 	cb.AddLine(2, "args = [%s]", strings.Join(sargs, ", "))
-	//sargs[len(args)] = "**kwargs"
-	//sargs = append(sargs, "**kwargs")
-	//alist := strings.Join(sargs, ", ")
 	if hasJSONResponse(md.endpoint) {
 		cb.AddLine(2, "return await self.client.get_parsed(endpoint, args, kwargs)")
 	} else {
@@ -212,82 +169,14 @@ func (md *PythonFormatter) GenerateBodyBlock(args []*docs.Argument) string {
 	}
 	cb.AddBlankLines(2)
 	return cb.String()
-
-	var bodyArg *docs.Argument
-	for _, arg := range args {
-		if arg.Type == "file" {
-			bodyArg = arg
-			break
-		}
-	}
-
-	if bodyArg != nil {
-		buf := new(bytes.Buffer)
-		fmt.Fprintf(buf, `
-#### Request Body
-
-Argument "%s" is of file type. This endpoint expects a file in the body of the request as 'multipart/form-data'.
-
-`, bodyArg.Name)
-		return buf.String()
-	}
-	return ""
 }
 
 func (md *PythonFormatter) GenerateResponseBlock(response string) string {
 	return ""
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, `Response here`)
-	return buf.String()
 }
 
 func (md *PythonFormatter) GenerateExampleBlock(endp *docs.Endpoint) string {
 	return ""
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "#### cURL Example\n\n")
-	// fmt.Fprintf(buf, "`")
-	// fmt.Fprintf(buf, "curl ")
-
-	// // Assemble arguments which are not of type file
-	// var queryargs []string
-	// hasFileArg := false
-	// for _, arg := range endp.Arguments {
-	// 	q := "arg="
-	// 	if arg.Type != "file" {
-	// 		q += "<" + arg.Name + ">"
-	// 		queryargs = append(queryargs, q)
-	// 	} else {
-	// 		hasFileArg = true
-	// 	}
-	// }
-
-	// // Assemble options
-	// for _, opt := range endp.Options {
-	// 	q := opt.Name + "="
-	// 	//if !opt.Required { // Omit non required options
-	// 	//	continue
-	// 	//}
-	// 	if len(opt.Default) > 0 {
-	// 		q += opt.Default
-	// 	} else {
-	// 		q += "<value>"
-	// 	}
-	// 	queryargs = append(queryargs, q)
-	// }
-
-	// if hasFileArg {
-	// 	fmt.Fprintf(buf, "-F file=@myfile ")
-	// }
-
-	// fmt.Fprintf(buf, "\"http://localhost:5001%s", endp.Name)
-	// if len(queryargs) > 0 {
-	// 	fmt.Fprintf(buf, "?%s\"", strings.Join(queryargs, "&"))
-	// } else {
-	// 	fmt.Fprintf(buf, "\"")
-	// }
-
-	// fmt.Fprintf(buf, "`\n\n***\n")
-	return buf.String()
 }
 
 func main() {

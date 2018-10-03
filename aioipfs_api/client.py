@@ -86,20 +86,3 @@ class Client(IPFSInterface):
 
     async def __aexit__(self, exc_type, exc, tb):
         await self.close()
-
-    # version = get_parsed_method('version')
-    # id = get_parsed_method('id')
-    # ls = get_parsed_method('ls')
-        
-    # async def cat(self, multihash):
-    #     """
-    #     Fetch IPFS object data.
-
-    #     :param multihash: The path to the IPFS object(s) to be outputted.
-    #     :returns: A coroutine which returns a file-like readable object
-    #     """
-    #     return await self.client.get('cat', multihash)
-
-    # async def object_data(self, multihash):
-    #     data = await self.client.get('object', 'data', multihash)
-    #     return await data.read()
