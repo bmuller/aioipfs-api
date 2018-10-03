@@ -11,5 +11,5 @@ setup(
     license="MIT",
     url="http://github.com/bmuller/aioipfs-api",
     packages=find_packages(),
-    install_requires=["aiohttp>=3.4.0"]
+    install_requires=["aiohttp>=3.4.0", "yarl>=1.2.6"]
 )

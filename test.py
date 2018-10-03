@@ -12,6 +12,7 @@ if __name__ == "__main__":
         async with Client() as c:
             #print(await c.log_level('all', 'debug'))            
             print(await c.add('/Users/bmuller/projects/aioipfs-api/blah'))
+            print(await c.add('/Users/bmuller/projects/aioipfs-api/blah/three.txt'))
             #async with c.cat('QmZLRFWaz9Kypt2ACNMDzA5uzACDRiCqwdkNSP1UZsu56D') as f:
             #    print(await f.read())
 
