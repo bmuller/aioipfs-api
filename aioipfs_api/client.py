@@ -3,6 +3,9 @@ import logging
 from distutils.version import LooseVersion
 
 import aiohttp
+import glob
+import os
+from io import BytesIO
 from yarl import URL
 
 from aioipfs_api.exceptions import VersionMismatch
@@ -30,8 +33,28 @@ class HTTPClient:
 
     async def get_parsed(self, path, args, kwargs):
         url = self.url.join(URL(path))
-        params = [('arg', v) for v in args]
+        params = []
+        file = None
+        for argval, argtype in args:
+            if argtype == 'file':
+                file = argval
+            else:
+                params.append(('arg', argval))
         params += [(k, v) for k, v in kwargs.items()]
+
+        if file:
+            file = os.path.normpath(file)
+            dirfile = os.path.dirname(file)
+            files = aiohttp.FormData()
+            for path in glob.glob(os.path.join(file, "**"), recursive=True):
+                relpath = os.path.relpath(path, dirfile)
+                if os.path.isdir(path):
+                    files.add_field('files', BytesIO(), filename=relpath, content_type='application/x-directory')
+                else:
+                    files.add_field('files', open(path, 'rb'), filename=relpath)
+            async with self.client.get(url, params=params, data=files) as resp:
+                return await resp.read()
+        
         async with self.client.get(url, params=params) as resp:
             if resp.content_type == 'application/json':
                 return await resp.json()
