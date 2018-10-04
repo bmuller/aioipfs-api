@@ -18,6 +18,9 @@ class Client(IPFSInterface):
         super().__init__(client)
 
     async def connect(self):
+        """
+        Start a HTTP connection and check API version for mismatch.
+        """
         await self.client.connect()
         fversion = await self.version()
         version = LooseVersion(fversion['Version'])
@@ -29,6 +32,9 @@ class Client(IPFSInterface):
         log.debug(msg, IPFSInterface.VERSION, version)
 
     async def close(self):
+        """
+        Close any open HTTP connections.
+        """
         await self.client.close()
 
     async def __aenter__(self):
