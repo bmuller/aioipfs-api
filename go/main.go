@@ -111,7 +111,7 @@ func (md *PythonFormatter) GenerateIntro() string {
 func (md *PythonFormatter) GenerateIndex(endps []*docs.Endpoint) string {
 	version := docs.IPFSVersion()
 	cb := NewCodeBuilder()
-	disable := "too-many-public-methods,line-too-long,too-many-lines,invalid-name"
+	disable := "too-many-public-methods,line-too-long,too-many-lines"
 	cb.AddLine(0, "# pylint: disable=%s", disable)
 	cb.AddLine(0, "class IPFSInterface:")
 	cb.AddLine(1, "\"\"\"")

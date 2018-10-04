@@ -5,7 +5,7 @@ import aioipfs_api
 setup(
     name="aioipfs-api",
     version=aioipfs_api.__version__,
-    description="",
+    description="Python 3 async client for interacting with the IPFS HTTP API",
     author="Brian Muller",
     author_email="bamuller@gmail.com",
     license="MIT",
