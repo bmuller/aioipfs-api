@@ -27,10 +27,8 @@ def _build_form(source, kwargs):
     sourcedir = os.path.dirname(source)
     flist = [source]
     if os.path.isdir(source):
-        if not kwargs.get('recursive'):
-            msg = "Passing a directory requires recursive=True argument"
-            raise ValueError(msg)
-        flist = glob(os.path.join(source, "**"), recursive=True)
+        recursive = kwargs.get('recursive')
+        flist = glob(os.path.join(source, "**"), recursive=recursive)
     form = FormData()
     for path in flist:
         relpath = os.path.relpath(path, sourcedir)
@@ -53,7 +51,7 @@ class HTTPClient:
 
     def get(self, path, args, kwargs):
         url = self.url.join(URL(path))
-        params = [('arg', v) for v in args]
+        params = [('arg', name) for name, _ in args]
         params += [(k, v) for k, v in kwargs.items()]
         return self.client.get(url, params=params)
 

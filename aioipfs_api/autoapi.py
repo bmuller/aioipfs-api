@@ -76,7 +76,7 @@ class IPFSInterface:
         """
         Trigger reprovider.
 
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'bitswap/reprovide'
         args = []
@@ -116,7 +116,7 @@ class IPFSInterface:
         Remove a given block from your wantlist.
 
         :param key: Key(s) to remove from your wantlist. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'bitswap/unwant'
         args = [(key, 'string')]
@@ -147,7 +147,7 @@ class IPFSInterface:
         Get a raw IPFS block.
 
         :param key: The base58 multihash of an existing block to get. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'block/get'
         args = [(key, 'string')]
@@ -279,7 +279,7 @@ class IPFSInterface:
         :param ipfs_path: The path to the IPFS object(s) to be outputted. (string)
         :param offset: Byte offset to begin reading from. (int)  Default: 0
         :param length: Maximum number of bytes to read. (int)  Default: 0
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'cat'
         args = [(ipfs_path, 'string')]
@@ -340,7 +340,7 @@ class IPFSInterface:
         """
         Open the config file for editing in $EDITOR.
 
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'config/edit'
         args = []
@@ -351,7 +351,7 @@ class IPFSInterface:
         Apply profile to config.
 
         :param profile: The profile to apply to the config. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'config/profile/apply'
         args = [(profile, 'string')]
@@ -362,7 +362,7 @@ class IPFSInterface:
         Replace the config with <file>.
 
         :param file: The file to use as the new config. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'config/replace'
         args = [(file, 'file')]
@@ -372,7 +372,7 @@ class IPFSInterface:
         """
         Output config file contents.
 
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'config/show'
         args = []
@@ -383,7 +383,7 @@ class IPFSInterface:
         Get a dag node from ipfs.
 
         :param ref: The object to get (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'dag/get'
         args = [(ref, 'string')]
@@ -611,7 +611,7 @@ class IPFSInterface:
         """
         Clear inactive requests from the log.
 
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'diag/cmds/clear'
         args = []
@@ -622,7 +622,7 @@ class IPFSInterface:
         Set how long to keep inactive requests in the log.
 
         :param time: Time to keep inactive requests in log. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'diag/cmds/set-time'
         args = [(time, 'string')]
@@ -632,7 +632,7 @@ class IPFSInterface:
         """
         Print system diagnostic information.
 
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'diag/sys'
         args = []
@@ -699,7 +699,7 @@ class IPFSInterface:
         :param path: Path to change. Default: '/'. (string)  Default: ""
         :param cid_version: Cid version to use. (experimental). (int)  Default: 0
         :param hashname: Hash function to use. Will set Cid version to 1 if used. (experimental). (string)  Default: ""
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/chcid'
         args = []
@@ -711,7 +711,7 @@ class IPFSInterface:
 
         :param source: Source object to copy. (string)
         :param dest: Destination to copy object to. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/cp'
         args = [(source, 'string'), (dest, 'string')]
@@ -722,7 +722,7 @@ class IPFSInterface:
         Flush a given path's data to disk.
 
         :param path: Path to flush. Default: '/'. (string)  Default: ""
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/flush'
         args = []
@@ -762,7 +762,7 @@ class IPFSInterface:
         :param parents: No error if existing, make parent directories as needed. (bool)  Default: False
         :param cid_version: Cid version to use. (experimental). (int)  Default: 0
         :param hashname: Hash function to use. Will set Cid version to 1 if used. (experimental). (string)  Default: ""
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/mkdir'
         args = [(path, 'string')]
@@ -774,7 +774,7 @@ class IPFSInterface:
 
         :param source: Source file to move. (string)
         :param dest: Destination path for file to be moved to. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/mv'
         args = [(source, 'string'), (dest, 'string')]
@@ -787,7 +787,7 @@ class IPFSInterface:
         :param path: Path to file to be read. (string)
         :param offset: Byte offset to begin reading from. (int)  Default: 0
         :param count: Maximum number of bytes to read. (int)  Default: 0
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/read'
         args = [(path, 'string')]
@@ -799,7 +799,7 @@ class IPFSInterface:
 
         :param path: File to remove. (string)
         :param recursive: Recursively remove directories. (bool)  Default: False
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/rm'
         args = [(path, 'string')]
@@ -855,7 +855,7 @@ class IPFSInterface:
         :param raw_leaves: Use raw blocks for newly created leaf nodes. (experimental). (bool)  Default: False
         :param cid_version: Cid version to use. (experimental). (int)  Default: 0
         :param hashname: Hash function to use. Will set Cid version to 1 if used. (experimental). (string)  Default: ""
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'files/write'
         args = [(path, 'string'), (data, 'file')]
@@ -936,7 +936,7 @@ class IPFSInterface:
         :param archive: Output a TAR archive. (bool)  Default: False
         :param compress: Compress the output with GZIP compression. (bool)  Default: False
         :param compression_level: The level of compression (1-9). (int)  Default: 0
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'get'
         args = [(ipfs_path, 'string')]
@@ -1102,7 +1102,7 @@ class IPFSInterface:
         """
         Read the event log.
 
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'log/tail'
         args = []
@@ -1267,7 +1267,7 @@ class IPFSInterface:
         Output the raw bytes of an IPFS object.
 
         :param key: Key of the object to retrieve, in base58-encoded multihash format. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'object/data'
         args = [(key, 'string')]
@@ -1540,7 +1540,7 @@ class IPFSInterface:
 
         :param protocol: P2P listener protocol (string)  Default: ""
         :param all: Close all listeners. (bool)  Default: False
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'p2p/listener/close'
         args = []
@@ -1575,7 +1575,7 @@ class IPFSInterface:
 
         :param protocol: Protocol identifier. (string)
         :param address: Request handling application address. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'p2p/listener/open'
         args = [(protocol, 'string'), (address, 'string')]
@@ -1587,7 +1587,7 @@ class IPFSInterface:
 
         :param handlerid: Stream HandlerID (string)  Default: ""
         :param all: Close all streams. (bool)  Default: False
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'p2p/stream/close'
         args = []
@@ -1600,7 +1600,7 @@ class IPFSInterface:
         :param peer: Remote peer to connect to (string)
         :param protocol: Protocol identifier. (string)
         :param bindaddress: Address to listen for connection/s (default: /ip4/127.0.0.1/tcp/0). (string)  Default: ""
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'p2p/stream/dial'
         args = [(peer, 'string'), (protocol, 'string')]
@@ -1817,7 +1817,7 @@ class IPFSInterface:
 
         :param topic: Topic to publish to. (string)
         :param data: Payload of message to publish. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'pubsub/pub'
         args = [(topic, 'string'), (data, 'string')]
@@ -1996,7 +1996,7 @@ class IPFSInterface:
         """
         Shut down the ipfs daemon
 
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'shutdown'
         args = []
@@ -2256,7 +2256,7 @@ class IPFSInterface:
         Export a tar file from IPFS.
 
         :param path: ipfs path of archive to export. (string)
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'tar/cat'
         args = [(path, 'string')]
@@ -2265,7 +2265,7 @@ class IPFSInterface:
     def update(self, **kwargs):
         """
         :param args: Arguments for subcommand. (string)  Default: ""
-        :returns: A file like object that can be read.
+        :returns: A aiohttp.ClientResponse object that can be read like a file.
         """
         endpoint = 'update'
         args = []

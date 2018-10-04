@@ -168,7 +168,7 @@ func (md *PythonFormatter) GenerateArgumentsBlock(args []*docs.Argument, opts []
 		cb.AddLine(4, strings.Trim(md.endpoint.Response, "\n"))
 		cb.AddBlankLines(1)
 	} else {
-		cb.AddLine(2, ":returns: A file like object that can be read.")
+		cb.AddLine(2, ":returns: A aiohttp.ClientResponse object that can be read like a file.")
 	}
 	cb.AddLine(2, "\"\"\"")
 	return cb.String()

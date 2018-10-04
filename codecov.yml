@@ -1,2 +1,2 @@
 ignore:
-  - "test_linting.py"
+  - "aioipfs_api/tests/test_linting.py"
